@@ -18,12 +18,13 @@ class Login extends Component {
     this.setState({
       [name]: value,
     });
+    console.log('gd');
   };
 
   handleClick = e => {
     const { id, pw } = this.state;
     if (id.length >= 5 && pw.length >= 8) {
-      fetch('http://10.58.5.199:8000/user/login', {
+      fetch(LoginApi, {
         method: 'POST',
         body: JSON.stringify({
           account: id,
@@ -39,7 +40,7 @@ class Login extends Component {
     const { pw, id } = this.state;
     if (e.key === 'Enter') {
       if (id.length >= 5 && pw.length >= 8) {
-        fetch('http://10.58.2.240:8000/user/login', {
+        fetch(LoginApi, {
           method: 'POST',
           body: JSON.stringify({
             account: id,
@@ -60,7 +61,6 @@ class Login extends Component {
       alert('로그인에 실패했습니다!');
     }
   };
-
   render() {
     const { handleClick, handleInput, handleKeyPress } = this;
     return (

@@ -1,6 +1,4 @@
-import { buildQueries, getQueriesForElement } from '@testing-library/react';
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 import Product from './Components/Product';
 import './ProductList.scss';
 
@@ -9,21 +7,22 @@ class ProductList extends Component {
     super();
     this.state = {
       productList: [],
-      selectedItem: '',
       sorting: 'total_sales',
       category: '',
+      currentId: 1,
+      selectedItem: 0,
     };
   }
 
-  // getData = sorting => {
-  //   fetch(`http://10.58.2.240:8000/product?sorting=${sorting}`)
-  //     .then(res => res.json())
-  //     .then(res => {
-  //       this.setState({
-  //         productList: res.data.products,
-  //       });
-  //     });
-  // };
+  getData = sorting => {
+    fetch(`http://10.58.2.240:8000/product?sorting=${sorting}`)
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          productList: res.data.products,
+        });
+      });
+  };
 
   getProductList = () => {
     let addressUrl = this.props.history.location['search'];
@@ -66,77 +65,36 @@ class ProductList extends Component {
     }
   }
 
-  // getData = () => {
-  //   fetch('/ProductList.json')
-  //     .then(res => res.json())
-  //     .then(res => {
-  //       this.setState({
-  //         productList: res,
-  //       });
-  //     });
-  // };
-
-  handleColor = e => {
-    this.setState({ selectedItem: e.target.innerText });
+  handleColor = idx => {
+    this.setState({ selectedItem: idx });
   };
 
-  menuHandle = e => {
-    this.getData(e.target.id);
-    // this.getData();
+  menuClick = e => {
+    this.setState({ currentId: e });
     this.handleColor(e);
+    this.getData(e);
   };
 
   render() {
     const { productList, selectedItem } = this.state;
-
     return (
       <div className="ProductList">
         <div className="pickListnum">
           <p>
-            총 <span>{this.state.productList.length}</span>개
+            총 <span>{productList.length}</span>개
           </p>
           <div className="pickListBox">
-            <p
-              className={selectedItem === '추천순' ? 'selected' : 'unselected'}
-              name="total_sales"
-              onClick={e => this.menuHandle(e)}
-            >
-              추천순
-            </p>
-            <p
-              className={selectedItem === '인기순' ? 'selected' : 'unselected'}
-              onClick={e => this.menuHandle(e)}
-              id="total_sales"
-            >
-              인기순
-            </p>
-            <p
-              className={selectedItem === '최신순' ? 'selected' : 'unselected'}
-              onClick={e => this.menuHandle(e)}
-              id="-create_at"
-            >
-              최신순
-            </p>
-            <p
-              className={
-                selectedItem === '낮은가격순' ? 'selected' : 'unselected'
-              }
-              onClick={e => this.menuHandle(e)}
-              id="price"
-            >
-              낮은가격순
-            </p>
-            <p
-              className={
-                this.state.selectedItem === '높은가격순'
-                  ? 'selected'
-                  : 'unselected'
-              }
-              onClick={e => this.menuHandle(e)}
-              id="-price"
-            >
-              높은가격순
-            </p>
+            {CATEGORYMENU.map((category, idx) => {
+              return (
+                <p
+                  key={idx}
+                  onClick={() => this.menuClick(idx)}
+                  className={idx === selectedItem ? 'selected' : 'unseleted'}
+                >
+                  {category}
+                </p>
+              );
+            })}
           </div>
         </div>
         <section>
@@ -163,5 +121,7 @@ class ProductList extends Component {
     );
   }
 }
+
+const CATEGORYMENU = ['추천순', '인기순', '최신순', '낮은가격순', '높은가격순'];
 
 export default ProductList;
