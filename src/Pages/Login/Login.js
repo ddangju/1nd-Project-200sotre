@@ -18,7 +18,6 @@ class Login extends Component {
     this.setState({
       [name]: value,
     });
-    console.log('gd');
   };
 
   handleClick = e => {
